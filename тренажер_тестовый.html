@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Экзамен Правовая психология | Тренажёр-тест</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f4fc 0%, #e6edf6 100%);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* главный контейнер */
+        .app-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* карточка вопросов */
+        .quiz-card {
+            background: #ffffff;
+            border-radius: 42px;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.2s ease;
+            margin-bottom: 24px;
+        }
+
+        /* прогресс-бар */
+        .progress-area {
+            padding: 20px 28px 0 28px;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #2c3e66;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            background-color: #e2e8f0;
+            border-radius: 40px;
+            height: 10px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #2b5f8a, #1e3b5c);
+            width: 0%;
+            height: 100%;
+            border-radius: 40px;
+            transition: width 0.25s ease;
+        }
+
+        /* тело вопроса */
+        .question-body {
+            padding: 24px 28px 20px 28px;
+        }
+
+        .question-text {
+            font-size: 1.55rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #0a1c2f;
+            margin-bottom: 28px;
+            letter-spacing: -0.2px;
+        }
+
+        /* варианты ответов */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .option-item {
+            background: #f8fafd;
+            border: 1.5px solid #dfe6ef;
+            border-radius: 28px;
+            padding: 12px 20px;
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #1f2e48;
+        }
+
+        .option-item:hover {
+            background: #eef3fc;
+            border-color: #8aa9c9;
+            transform: translateX(4px);
+        }
+
+        input[type="radio"], input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #1f6392;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .option-label {
+            cursor: pointer;
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        /* кнопки управления */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 15px;
+            border-top: 1px solid #eef2f8;
+            padding-top: 24px;
+        }
+
+        .btn {
+            border: none;
+            background: #eef2f9;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-family: inherit;
+            color: #1e3a5f;
+        }
+
+        .btn-primary {
+            background: #1f6392;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary:hover {
+            background: #0f4b70;
+            transform: scale(0.97);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #bdcce0;
+        }
+
+        .btn-outline:hover {
+            background: #e4ebf3;
+            border-color: #7e9ab9;
+        }
+
+        .btn-check {
+            background: #2c7a4d;
+            color: white;
+        }
+
+        .btn-check:hover {
+            background: #1f5e3a;
+        }
+
+        .feedback {
+            background: #f0f7ff;
+            border-radius: 28px;
+            padding: 16px 22px;
+            margin: 20px 28px 24px 28px;
+            font-size: 0.95rem;
+            border-left: 6px solid #2b6c9e;
+            color: #0b2b44;
+        }
+
+        .feedback.correct {
+            background: #e3f5ec;
+            border-left-color: #2b7a4b;
+            color: #145c36;
+        }
+
+        .feedback.wrong {
+            background: #ffe8e8;
+            border-left-color: #c23d3d;
+            color: #9b2c2c;
+        }
+
+        .result-panel {
+            background: white;
+            border-radius: 32px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .result-stats {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .question-counter {
+            font-size: 0.9rem;
+            background: #eef2fa;
+            display: inline-block;
+            padding: 5px 14px;
+            border-radius: 40px;
+            margin-bottom: 12px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 0.8rem;
+            color: #4c6f8c;
+        }
+
+        @media (max-width: 640px) {
+            .question-text {
+                font-size: 1.25rem;
+            }
+            .question-body {
+                padding: 18px;
+            }
+            .option-item {
+                padding: 10px 16px;
+            }
+            .btn {
+                padding: 8px 16px;
+            }
+        }
+
+        .reset-btn {
+            background: #cfdee9;
+            color: #1f4468;
+        }
+        .disabled-btn {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        .highlight-correct {
+            background: #dff0e5;
+            border-color: #2b7a4b;
+        }
+        .wrong-mark {
+            background: #ffe0e0;
+            border-color: #d45c5c;
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <div class="quiz-card">
+        <div class="progress-area">
+            <div class="progress-stats">
+                <span>📋 Тренажёр: Правовая психология</span>
+                <span id="questionCounter">0 / 0</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        <div class="question-body" id="questionBody">
+            <div class="question-text" id="questionText">Загрузка вопросов...</div>
+            <div class="options-list" id="optionsContainer"></div>
+            <div class="action-buttons">
+                <button class="btn btn-outline" id="prevBtn">◀ Назад</button>
+                <button class="btn btn-check" id="checkBtn">✓ Проверить</button>
+                <button class="btn btn-outline" id="nextBtn">Вперёд ▶</button>
+                <button class="btn reset-btn" id="resetBtn">⟳ Сброс</button>
+            </div>
+        </div>
+        <div id="feedbackArea" class="feedback" style="display: none;"></div>
+    </div>
+    <div class="result-panel" id="resultPanel" style="display: none;">
+        <div class="result-stats" id="resultStats"></div>
+        <button class="btn btn-primary" id="restartTestBtn" style="margin-top: 15px;">🔄 Пройти заново</button>
+    </div>
+    <footer>✅ режим тренировки: выберите ответ → проверка → подсветка верного. Для множественного выбора отмечены чекбоксы</footer>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // БАЗА ВОПРОСОВ (полностью на основе документа, жирные ответы)
+    // структура: { text, options, correctIndices, multiple }
+    // correctIndices – массив индексов правильных вариантов (0-based)
+    // --------------------------------------------------------------
+    const QUESTIONS = [
+        { text: "К задачам правовой психологии НЕ относится:", options: ["изучение психологических явлений в процессе правотворчества", "изучение психологических явлений в процессе правосознания", "изучение психологических явлений в процессе правоприменения", "изучение психологических явлений в процессе правосоздания", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "К задачам правовой психологии относится:", options: ["изучение явлений в правотворчестве, правосознании, правоприменении", "исследование предпосылок эффективности правовых норм", "определение направлений исследования личности преступника и жертвы", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "К задачам правовой психологии относится (блок исполнительной психологии):", options: ["анализ закономерностей деятельности исполнительных учреждений", "исследование предпосылок эффективности правовых норм", "исследование психологии юридического труда", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "Найдите неверный вариант ответа. Теоретическая основа правовой психологии включает:", options: ["философскую базу", "естественно-научную базу", "правовую базу", "теоретическую базу", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "Законы и категории материалистической диалектики (единство и борьба противоположностей и т.д.) составляют:", options: ["философскую базу", "естественно-научную базу", "правовую базу", "материалистическую базу", "все перечисленное"], correctIndices: [0], multiple: false },
+        { text: "Физиология высшей нервной системы человека, объясняющая психические проявления, составляет:", options: ["естественно-научную базу", "философскую базу", "правовую базу", "нервную базу", "все перечисленное"], correctIndices: [0], multiple: false },
+        { text: "Основополагающие принципы юриспруденции: законность, гуманизм, демократизм составляют:", options: ["правовую базу", "естественно-научную базу", "философскую базу", "демократическую базу", "все перечисленное"], correctIndices: [0], multiple: false },
+        { text: "Компонентами структуры правовой психологии являются:", options: ["психология социально-регулятивной сущности права", "психологические понятия в уголовно-правовых отношениях", "психология преступления и предупреждения", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "Компонентами структуры правовой психологии (доп.) являются:", options: ["психология профессионального труда юриста", "исполнительная (пенитенциарная) психология", "психология преступления", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "Психология социально-регулятивной сущности права включает:", options: ["а, б, в, г", "а, б, в, г, д", "а, б, в", "б, в, г, д"], correctIndices: [0], multiple: false },  // а,б,в,г - верно
+        { text: "Психология преступления и его предупреждения (криминальная психология) включает:", options: ["а, б, в, г, д, е, ж", "а, б, в, г, д, е", "а, в, г, е, ж", "а, б, г, е, ж"], correctIndices: [1], multiple: false },
+        { text: "Исполнительная (пенитенциарная) психология включает:", options: ["психология осужденного", "психология администрации ИУ", "меры воспитательного воздействия", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "Исполнительная (пенитенциарная) психология (адаптация):", options: ["проблемы адаптации осужденного", "психология подготовки к освобождению", "психология администрации ИУ", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "Раздел юридической психологии, изучающий психические явления в процессе правотворчества и правосознания — это:", options: ["правовая психология", "судебная психология", "исполнительная психология", "криминальная психология", "все перечисленное"], correctIndices: [0], multiple: false },
+        { text: "Раздел, изучающий условия правоисполнительного производства, ресоциализации личности осужденного — это:", options: ["правовая психология", "судебная психология", "исполнительная психология", "криминальная психология", "все перечисленное"], correctIndices: [2], multiple: false },
+        { text: "Изучением зависимости психологических процессов от внешних стимулов занимается:", options: ["метод структурного анализа", "метод качественного анализа", "метод наблюдения", "нет верного варианта ответа"], correctIndices: [3], multiple: false },
+        { text: "Систематическое целеустремленное накопление фактов о психологических особенностях — это:", options: ["метод структурного анализа", "метод качественного анализа", "метод эксперимента", "нет верного варианта ответа"], correctIndices: [3], multiple: false },
+        { text: "Выявление и обобщение биографических данных — это:", options: ["метод изучения документов (биографический)", "метод структурного анализа", "метод факторного анализа", "метод наблюдения"], correctIndices: [0], multiple: false },
+        { text: "Исследование социально-психологических явлений конкретного объекта (коллектива осужденных) — это:", options: ["метод изучения отдельного случая (монографический)", "метод изучения документов", "структурный анализ", "факторный анализ"], correctIndices: [0], multiple: false },
+        { text: "Использование стандартных вопросов и задач, имеющих шкалу значений — это:", options: ["структурный анализ", "факторный анализ", "метод тестирования", "нет верного ответа"], correctIndices: [2], multiple: false },
+        { text: "Совокупность отдельных правовых институтов, имеющих внутренние связи — это:", options: ["системно-структурная характеристика права", "социология права", "социология законодательства", "нет верного ответа"], correctIndices: [0], multiple: false },
+        { text: "Системно-структурная характеристика права включает:", options: ["а, б, в, г, д", "б, в, г, д", "а, б, в, г", "а, в, г, д"], correctIndices: [0], multiple: false },
+        { text: "__________ — область социологии, изучающая функционирование права в системе социальных институтов.", options: ["социология права", "социология законодательства", "криминальная социология", "исправительная социология"], correctIndices: [0], multiple: false },
+        { text: "Теоретическая / научная социология права изучает:", options: ["а, б, в, г", "б, в, г", "а, в, г", "а, б, в"], correctIndices: [0], multiple: false },
+        { text: "Практическая социология права изучает:", options: ["а, б, в, г, д", "б, в, г, д", "в, г, д", "б, в, д"], correctIndices: [0], multiple: false },
+        { text: "Теоретическая социология права НЕ изучает:", options: ["а, б, в, д", "г", "б, в", "в, г, д"], correctIndices: [1], multiple: false },
+        { text: "Практическая социология права НЕ изучает:", options: ["б, в", "а, г, д, е, ж", "а, б, в", "д, е, ж"], correctIndices: [0], multiple: false },
+        { text: "__________ — развитие системы законодательных актов и законодательной деятельности.", options: ["официальное нормотворчество", "теневое нормотворчество", "социология правоприменения", "нет верного ответа"], correctIndices: [0], multiple: false },
+        { text: "__________ — изучение степени стратификации общества на правотворческий процесс.", options: ["официальное нормотворчество", "теневое нормотворчество", "социология правоприменения", "нет верного ответа"], correctIndices: [1], multiple: false },
+        { text: "__________ разрабатывает предложения по улучшению функционирования законодательных норм, выявляет лоббирование:", options: ["социология законодательства", "официальное нормотворчество", "теневое нормотворчество", "социология правоприменения"], correctIndices: [0], multiple: false },
+        { text: "__________ позволяют законодателю планировать использование данных социологии:", options: ["социологические исследования", "официальное нормотворчество", "социология правоприменения", "нет верного ответа"], correctIndices: [0], multiple: false },
+        { text: "Структура конфликта включает:", options: ["конфликтную ситуацию", "стороны конфликта", "инцидент", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "__________ — совокупность представлений, знаний, чувств, оценок индивидами норм права.", options: ["правовое сознание", "судебная социология", "социологическое исследование", "правовая культура"], correctIndices: [0], multiple: false },
+        { text: "__________ исследует реальные процессы функционирования судебных и правоохранительных органов.", options: ["социология правоприменения", "социология правотворчества", "социология преступности", "пенология"], correctIndices: [0], multiple: false },
+        { text: "__________ — отрасль юридической социологии, изучающая преступность, её социальные причины.", options: ["социология преступности", "социология правоприменения", "социология правотворчества", "нет верного ответа"], correctIndices: [0], multiple: false },
+        { text: "__________ занимается исследованиями в области пенитенциарной системы.", options: ["социология уголовного наказания", "социология правоприменения", "социология правотворчества", "нет верного ответа"], correctIndices: [0], multiple: false },
+        { text: "К важнейшим функциям наказания относится:", options: ["а, б, в, г", "а, б, в", "б, в, г", "а, в, г"], correctIndices: [0], multiple: false },
+        { text: "__________ — первичный элемент права, содержащий предписание поведения.", options: ["норма права", "воля", "вина", "нет верного ответа"], correctIndices: [0], multiple: false },
+        { text: "__________ — форма психического отражения, высший уровень произвольной регуляции деятельности.", options: ["воля", "сознание", "мотив", "потребность"], correctIndices: [0], multiple: false },
+        { text: "__________ — психологическое отношение лица к своему противоправному поведению.", options: ["вина / виновность", "воля", "сознание", "потребность"], correctIndices: [0], multiple: false },
+        { text: "__________ — интеллектуальная деятельность по созданию или изменению НПА.", options: ["правотворчество", "правоприменение", "толкование", "сознание"], correctIndices: [0], multiple: false },
+        { text: "К этапам правотворчества относится:", options: ["а, б, в, г", "а, б, г", "б, в, г", "а, в, г"], correctIndices: [0], multiple: false },
+        { text: "__________ — интеллектуальный процесс установления подлинного содержания правовых актов.", options: ["толкование", "правосознание", "правопонимание", "правотворчество"], correctIndices: [0], multiple: false },
+        { text: "К функциям толкования относится:", options: ["а, б, в, г, д", "а, в, д", "б, г", "б, в, г, д"], correctIndices: [0], multiple: false },
+        { text: "__________ — систематическая мыслительная деятельность, нацеленная на понимание права.", options: ["правосознание", "толкование", "правопонимание", "правотворчество"], correctIndices: [0], multiple: false },
+        { text: "__________ — совокупность всех ценностей духовного характера, созданных в сфере права.", options: ["правовая культура", "правосознание", "толкование", "духовность"], correctIndices: [0], multiple: false },
+        { text: "К принципам правовой культуры относится:", options: ["а, б, в, г", "а, б, в", "б, в, г", "а, в, г"], correctIndices: [0], multiple: false },
+        { text: "Изучает психические явления, проявляющиеся в процессе деятельности, связанной с преступлением (формирование преступной установки) — это:", options: ["криминальная психология", "юридическая психология", "ювенальная психология", "виктимная психология"], correctIndices: [0], multiple: false },
+        { text: "Криминальная психология изучает:", options: ["психические явления и закономерности, связанные с преступлением", "образование преступного стереотипа", "всё вышеперечисленное", "систематическое накопление фактов о личности"], correctIndices: [2], multiple: false },
+        { text: "Структура криминальной психологии НЕ включает:", options: ["криминальное поведение и мотивы", "психологию преступной группы", "психологию несовершеннолетних преступников", "теневое нормотворчество"], correctIndices: [3], multiple: false },
+        { text: "Внешними факторами психологии криминального поведения являются:", options: ["причины и условия, способствующие преступлению", "форма вины, мотив, цель", "все перечисленные", "судебно-психологическая классификация"], correctIndices: [0], multiple: false },
+        { text: "Внутренними факторами криминального поведения являются:", options: ["форма вины, мотив, цель преступления", "причины и условия", "все перечисленные", "классификация личности"], correctIndices: [0], multiple: false },
+        { text: "Криминальное поведение — это:", options: ["внешнее проявление преступной деятельности", "судебно-психологическая классификация", "изучение стратификации общества", "раздел юридической психологии"], correctIndices: [0], multiple: false },
+        { text: "В криминальном поведении результат и намеченные цели:", options: ["могут совпадать или не совпадать", "совпадают", "не совпадают", "только по объективным причинам"], correctIndices: [0], multiple: false },
+        { text: "Лицо, совершившее антиобщественное деяние и признанное виновным — это:", options: ["преступник", "личность преступника", "жертва преступления", "рецидивист"], correctIndices: [0], multiple: false },
+        { text: "Общественно опасная личность преступника означает:", options: ["способность в будущем пренебречь интересами и совершить преступление", "возникновение потребностей в противоправном поведении", "реализация преступных намерений", "все варианты верны"], correctIndices: [0], multiple: false },
+        { text: "Судебно-психологическая классификация личности включает типы:", options: ["асоциальные", "антисоциальные", "случайные", "все варианты верные"], correctIndices: [3], multiple: false },
+        { text: "По содержанию ценностно-ориентационной направленности различают преступников (несколько):", options: ["с насильственной направленностью", "с корыстной направленностью", "безмотивные преступники", "антисоциальные", "случайные"], correctIndices: [0,1], multiple: true },
+        { text: "Антиобщественное объединение на основе совместной преступной деятельности — это:", options: ["преступная группа", "формальная группа", "неформальная группа", "стихийная группа"], correctIndices: [0], multiple: false },
+        { text: "К общим закономерностям формирования преступной группы относится:", options: ["выдвижение лидера", "добровольность объединения", "постепенное расширение деятельности", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "Физическое лицо, которому преступлением причинен вред — это:", options: ["жертва преступления", "виктимность", "виктимное поведение", "виктимизация"], correctIndices: [0], multiple: false },
+        { text: "Насилие как объект виктимологических исследований бывает:", options: ["физическим", "психологическим", "экономическим", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "Побои, избиения, лишение свободы — это:", options: ["физическое насилие", "психологическое насилие", "экономическое насилие", "психическое насилие"], correctIndices: [0], multiple: false },
+        { text: "Враждебное поведение, направленное на нанесение вреда — это:", options: ["агрессия", "давление", "насилие", "нажим"], correctIndices: [0], multiple: false },
+        { text: "Энергичное воздействие преступника на жертву с целью принуждения — это:", options: ["нажим", "агрессия", "насилие", "сила нервной системы"], correctIndices: [0], multiple: false },
+        { text: "Область юридической психологии, изучающая деятельность ИУ, психологию осужденных — это:", options: ["пенитенциарная психология", "криминальная психология", "виктимология", "девиантная психология"], correctIndices: [0], multiple: false },
+        { text: "Формирование у осужденных уважительного отношения к человеку, труду — это:", options: ["исправление осужденного", "основные средства исправления", "объекты пенитенциарной психологии", "воспитательная деятельность"], correctIndices: [0], multiple: false },
+        { text: "К основным средствам исправления осужденных относятся:", options: ["а, б, в, г, д, е", "а, б, в, г, д", "б, в, г, д, е", "нет верной комбинации"], correctIndices: [0], multiple: false },
+        { text: "Процесс перевоспитания осужденного включает:", options: ["а, б, в, г, д, е", "а, б, в, д, е", "а, б, в, г, д", "а, в, г, д, е"], correctIndices: [0], multiple: false },
+        { text: "Качества, которыми должен обладать сотрудник ИУ:", options: ["знание индивидуальных особенностей", "моральные качества", "образованность, аккуратность", "все перечисленное"], correctIndices: [3], multiple: false },
+        { text: "Профессиограмма — это:", options: ["1,2,3,5", "1,2,3,4,5,6", "1,2,3,4,5", "1,2,3,5,6"], correctIndices: [0], multiple: false },
+        { text: "К профессионально необходимым психологическим качествам относятся:", options: ["аналитический ум, интуиция, наблюдательность и др. (без ложной корпоративности)", "все включая ложную корпоративность", "с ложной корпоративностью", "только 3,14"], correctIndices: [0], multiple: false },
+        { text: "К субъективным причинам деформации относится:", options: ["завышенная самооценка, карьеризм, отсутствие самокритики, эмоц. выгорание", "детальная регламентация, перегрузки", "властные полномочия, противодействие", "1,2,5,6,7,12,13,14,17"], correctIndices: [0], multiple: false }
+    ];
+
+    // Дополнительно добавим несколько вопросов из документа по множественному выбору (для чекбоксов)
+    // вопрос про типы акцентуации (несколько неверных) преобразуем в multiple.
+    QUESTIONS.push({
+        text: "Различают следующие типы акцентуации характера несовершеннолетних (неверные варианты):",
+        options: ["астенический", "гипертимный", "эмоционально-неустойчивый", "эмоционально-устойчивый"],
+        correctIndices: [3], multiple: false  // эмоционально-устойчивый — неверный вариант, указанный в документе
+    });
+    QUESTIONS.push({
+        text: "Поведенческие реакции подростков 14-16 лет:",
+        options: ["реакция группирования", "реакция имитации", "реакция компенсации", "все перечисленное"],
+        correctIndices: [3], multiple: false
+    });
+    // вопрос про деформацию (открытая структура) - правильный набор
+    QUESTIONS.push({
+        text: "Основными элементами открытой структуры профессиональной деформации являются:",
+        options: ["взяточничество, должное понимание, неверное понимание престижа и т.д. (группа А)", "злоупотребление жаргоном, неаккуратность, обвинительный уклон и др.", "1,2,4,6,9,13,15,17,19", "все варианты"],
+        correctIndices: [1], multiple: false
+    });
+
+    // ----- ЛОГИКА ТЕСТА -----
+    let currentIndex = 0;
+    let userAnswers = [];     // для каждого вопроса храним массив выбранных индексов (для single тоже массив)
+    let answerChecked = new Array(QUESTIONS.length).fill(false);
+    let totalQuestions = QUESTIONS.length;
+
+    function renderQuestion() {
+        const q = QUESTIONS[currentIndex];
+        document.getElementById("questionText").innerHTML = q.text;
+        const container = document.getElementById("optionsContainer");
+        container.innerHTML = "";
+        const multiple = q.multiple;
+        q.options.forEach((opt, idx) => {
+            const div = document.createElement("div");
+            div.className = "option-item";
+            const input = document.createElement("input");
+            input.type = multiple ? "checkbox" : "radio";
+            input.name = "questionOption";
+            input.value = idx;
+            input.id = `opt_${idx}`;
+            // восстановить ранее выбранные
+            const saved = userAnswers[currentIndex] || [];
+            if (saved.includes(idx)) input.checked = true;
+            const label = document.createElement("label");
+            label.htmlFor = `opt_${idx}`;
+            label.className = "option-label";
+            label.innerText = opt;
+            div.appendChild(input);
+            div.appendChild(label);
+            div.addEventListener("click", (e) => {
+                if (e.target.tagName !== 'INPUT') {
+                    input.checked = !input.checked;
+                    const evt = new Event('change', { bubbles: true });
+                    input.dispatchEvent(evt);
+                }
+            });
+            input.addEventListener("change", () => {
+                let selected = userAnswers[currentIndex] || [];
+                if (multiple) {
+                    if (input.checked) selected.push(idx);
+                    else selected = selected.filter(i => i !== idx);
+                } else {
+                    if (input.checked) selected = [idx];
+                    else selected = [];
+                }
+                userAnswers[currentIndex] = selected;
+            });
+            container.appendChild(div);
+        });
+        document.getElementById("questionCounter").innerText = `${currentIndex+1} / ${totalQuestions}`;
+        const progressPercent = ((currentIndex+1)/totalQuestions)*100;
+        document.getElementById("progressFill").style.width = `${progressPercent}%`;
+        const feedbackDiv = document.getElementById("feedbackArea");
+        if (answerChecked[currentIndex]) {
+            const isCorrect = checkCurrentAnswerCorrect();
+            const qq = QUESTIONS[currentIndex];
+            const correctText = qq.correctIndices.map(i => qq.options[i]).join(", ");
+            if (isCorrect) {
+                feedbackDiv.style.display = "block";
+                feedbackDiv.className = "feedback correct";
+                feedbackDiv.innerHTML = `✅ Верно! Правильный ответ: ${correctText}`;
+            } else {
+                feedbackDiv.style.display = "block";
+                feedbackDiv.className = "feedback wrong";
+                feedbackDiv.innerHTML = `❌ Ошибка. Правильный ответ: ${correctText}`;
+            }
+        } else {
+            feedbackDiv.style.display = "none";
+        }
+        // подсветка вариантов, если уже проверен
+        if (answerChecked[currentIndex]) {
+            highlightCorrectOptions();
+        } else {
+            document.querySelectorAll(".option-item").forEach(el => el.classList.remove("highlight-correct", "wrong-mark"));
+        }
+    }
+
+    function checkCurrentAnswerCorrect() {
+        const user = userAnswers[currentIndex] || [];
+        const correct = QUESTIONS[currentIndex].correctIndices;
+        if (user.length !== correct.length) return false;
+        const sortedU = [...user].sort();
+        const sortedC = [...correct].sort();
+        return sortedU.every((val, idx) => val === sortedC[idx]);
+    }
+
+    function highlightCorrectOptions() {
+        const q = QUESTIONS[currentIndex];
+        const correctIdx = q.correctIndices;
+        const items = document.querySelectorAll(".option-item");
+        items.forEach((item, idx) => {
+            item.classList.remove("highlight-correct", "wrong-mark");
+            const inp = item.querySelector("input");
+            if (correctIdx.includes(idx)) {
+                item.classList.add("highlight-correct");
+            }
+            if (userAnswers[currentIndex] && userAnswers[currentIndex].includes(idx) && !correctIdx.includes(idx)) {
+                item.classList.add("wrong-mark");
+            }
+        });
+    }
+
+    function checkAnswer() {
+        if (answerChecked[currentIndex]) {
+            // уже проверено, просто покажем снова
+            renderQuestion();
+            return;
+        }
+        const selected = userAnswers[currentIndex] || [];
+        if (selected.length === 0) {
+            alert("Пожалуйста, выберите вариант ответа.");
+            return;
+        }
+        answerChecked[currentIndex] = true;
+        renderQuestion();
+    }
+
+    function nextQuestion() {
+        if (currentIndex < totalQuestions - 1) {
+            currentIndex++;
+            renderQuestion();
+        } else {
+            if (answerChecked.every(v => v === true)) showFinalResults();
+            else alert("Проверьте все вопросы перед завершением. Вы ещё не ответили на некоторые.");
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            renderQuestion();
+        }
+    }
+
+    function resetTest() {
+        if (confirm("Сбросить все ответы и начать заново?")) {
+            userAnswers = [];
+            answerChecked.fill(false);
+            for (let i = 0; i < totalQuestions; i++) userAnswers[i] = [];
+            currentIndex = 0;
+            renderQuestion();
+            document.getElementById("resultPanel").style.display = "none";
+        }
+    }
+
+    function showFinalResults() {
+        let correctCount = 0;
+        for (let i = 0; i < totalQuestions; i++) {
+            if (answerChecked[i] && checkAnswerAtIndex(i)) correctCount++;
+        }
+        const percent = Math.round((correctCount/totalQuestions)*100);
+        document.getElementById("resultStats").innerHTML = `🎯 Результат: ${correctCount} из ${totalQuestions} (${percent}%)<br>${percent >= 70 ? 'Отлично! Материал усвоен.' : 'Повторите темы и попробуйте снова.'}`;
+        document.getElementById("resultPanel").style.display = "block";
+    }
+
+    function checkAnswerAtIndex(idx) {
+        const user = userAnswers[idx] || [];
+        const correct = QUESTIONS[idx].correctIndices;
+        if (user.length !== correct.length) return false;
+        const su = [...user].sort();
+        const sc = [...correct].sort();
+        return su.every((v,i)=> v===sc[i]);
+    }
+
+    function restartFromResults() {
+        resetTest();
+    }
+
+    // инициализация
+    for (let i = 0; i < totalQuestions; i++) userAnswers[i] = [];
+    renderQuestion();
+    document.getElementById("prevBtn").addEventListener("click", prevQuestion);
+    document.getElementById("checkBtn").addEventListener("click", checkAnswer);
+    document.getElementById("nextBtn").addEventListener("click", nextQuestion);
+    document.getElementById("resetBtn").addEventListener("click", resetTest);
+    document.getElementById("restartTestBtn").addEventListener("click", restartFromResults);
+</script>
+</body>
+</html>
